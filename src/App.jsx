@@ -1,50 +1,76 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { Search, } from "react-bootstrap-icons";
+import { Search } from "react-bootstrap-icons";
 import HourlyForecast from "./Components/HourlyForecast";
-import { Alert, Col, InputGroup, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import CurrentWeather from "./Components/CurrentWeather";
 import CurrentWeatherDetails from "./Components/CurrentWeatherDetails";
-
+import DailyForecast from "./Components/DailyForecast";
 
 function App() {
   const apiKey = "6a0ce76895d9c8de6cffbd89fb467e88";
+  const apiAccessKey = "dffb541e95a64980898154955242702";
   const [location, setCityName] = useState("");
   const [currentData, setCurrentData] = useState(null);
   const [error, setError] = useState(null);
   const [hourForecast, setHourForecast] = useState(null);
+  const [dailyForecast, setDailyForecast] = useState(null);
+
+  useEffect(() => {
+    getCurrentWeather();
+  }, []);
 
   const getCurrentWeather = async (latitude, longitude) => {
-    const getHourForecast = async () => {
+    const userLatitude = localStorage.getItem("userLatitude");
+    const userLongitude = localStorage.getItem("userLongitude");
+    if (userLatitude && userLongitude) {
+      const getHourForecast = async () => {
+        try {
+          const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${userLatitude}&lon=${userLongitude}&cnt=7&appid=${apiKey}`;
+          const res = await fetch(url);
+          const data = await res.json();
+          console.log("Forecast Data: ", data);
+          setHourForecast(data);
+        } catch (error) {
+          console.log("Error fetching weather forecast:", error);
+        }
+      };
+      const getDailyForecast = async () => {
+        
+        const url = "http://api.weatherapi.com/v1/forecast.json?";
+
+        try {
+          const res = await fetch(
+            `${url}key=${apiAccessKey}&q=${userLatitude},${userLongitude}&days=7`
+          );
+          const data = await res.json();
+          console.log("7-day forecast: ", data);
+          setDailyForecast(data);
+        } catch (error) {
+          console.log(error);
+          setCurrentData(null);
+          setError(error);
+        }
+      };
       try {
-        const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&cnt=7&appid=${apiKey}`;
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${userLatitude}&lon=${userLongitude}&appid=${apiKey}`;
         const res = await fetch(url);
+        if (!res.ok) {
+          throw new Error("Error fetching live location");
+          console.log(error);
+        }
         const data = await res.json();
-        console.log("Forecast Data: ", data);
-        setHourForecast(data);
+        setCurrentData(data);
+        setError(null);
+        getHourForecast();
+        getDailyForecast();
+
+        console.log(data);
       } catch (error) {
-        console.log("Error fetching weather forecast:", error);
-      }
-    };
-
-    try {
-      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}`;
-      const res = await fetch(url);
-      if (!res.ok) {
-        throw new Error("City not found");
         console.log(error);
+        setCurrentData(null);
+        setError(error.message);
       }
-      const data = await res.json();
-      setCurrentData(data);
-      setError(null);
-
-      getHourForecast();
-
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-      setCurrentData(null);
-      setError(error.message);
     }
   };
   const handleSearch = async () => {
@@ -57,6 +83,21 @@ function App() {
         setHourForecast(data);
       } catch (error) {
         console.log("Error fetching weather forecast:", error);
+      }
+    };
+    const getDailyForecast = async () => {
+      const url = "http://api.weatherapi.com/v1/forecast.json?";
+      try {
+        const res = await fetch(
+          `${url}key=${apiAccessKey}&q=${location}&days=7`
+        );
+        const data = await res.json();
+        console.log("7-day forecast: ", data);
+        setDailyForecast(data);
+      } catch (error) {
+        console.log(error);
+        setCurrentData(null);
+        setError(error);
       }
     };
 
@@ -78,6 +119,7 @@ function App() {
       setError(null);
       console.log(data);
       getHourForecast();
+      getDailyForecast();
     } catch (error) {
       setCurrentData(null);
       setError(error.message);
@@ -85,13 +127,18 @@ function App() {
     }
     setCityName("");
   };
-
+  useEffect(() => {
+    getUserLocation();
+  }, []);
   const getUserLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          getCurrentWeather(latitude, longitude);
+          localStorage.setItem("userLatitude", latitude);
+          localStorage.setItem("userLongitude", longitude);
+          // getCurrentWeather(latitude, longitude);
+          console.log("userLocation: ", latitude, longitude);
         },
         (error) => {
           setError(
@@ -104,12 +151,9 @@ function App() {
       setError("Geolocation is not supported by this browser.");
     }
   };
-  useEffect(() => {
-    getCurrentWeather();
-  }, []);
-  useEffect(() => {
-    getUserLocation();
-  }, []);
+
+  
+
 
   return (
     <>
@@ -117,17 +161,21 @@ function App() {
         <div className="layout container-fluid">
           <Row>
             <Col lg={8} md={12} xs={12} className="col-8">
-              <div className="search-group">
-                <input
-                  type="text"
-                  placeholder="Search for cities"
-                  className="search-control"
-                  value={location}
-                  onChange={(e) => setCityName(e.target.value)}
-                />
-                <button className="search-btn" onClick={handleSearch}>
-                  <Search className="search" />
-                </button>
+              <div>
+                <div className="search-group">
+                  <input
+                    name="search"
+                    id="search"
+                    type="search"
+                    placeholder="Search for cities"
+                    className="search-control"
+                    value={location}
+                    onChange={(e) => setCityName(e.target.value)}
+                  />
+                  <button className="search-btn" onClick={handleSearch}>
+                    <Search className="search" />
+                  </button>
+                </div>
               </div>
 
               {error && <p className="w-50 mt-2 text-danger">{error}</p>}
@@ -169,9 +217,13 @@ function App() {
               </Row>
             </Col>
             <Col lg={4} md={12} xs={12} className="col-4">
-              <div>
-                Daily Forecast
-              </div>
+               <div>
+                {dailyForecast ? (
+                  <DailyForecast dailyForecast={dailyForecast} />
+                ) : (
+                  <p>no daily forecast</p>
+                )}
+              </div> 
             </Col>
           </Row>
         </div>

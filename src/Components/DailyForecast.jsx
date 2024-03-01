@@ -1,28 +1,18 @@
 import React from "react";
-import { Card } from "react-bootstrap";
-import WeatherIcons from "./WeatherIcons";
-const DailyForecast = ({ forecast }) => {
+const DailyForecast = ({ dailyForecast }) => {
+  const forecast = dailyForecast.forecast;
   return (
-    <div>
-      <div className="forecast">
-        {forecast.list.map((item, index) => (
-          <div key={index}>
-            <Card>
-              <Card.Body>
-                <div>
-                  <p> {item.dt_txt}</p>
-                </div>
-                <p>{Math.round(item.main.temp - 273.15)}°C</p>
-                <hr />
-                <p className="forecastDesc">{item.weather[0].description}</p>
-                <p>
-                  <WeatherIcons
-                    weatherIconCode={item.weather[0].icon}
-                    className="mid-icon"
-                  />
-                </p>
-              </Card.Body>
-            </Card>
+    <div className="dailyForecast mt-3">
+      <h3>7 days Forecast {dailyForecast.location.name}</h3>
+      <div className="d-flex h-100 flex-column">
+        {forecast.forecastday.map((item, index) => (
+          <div key={index} className="dailycard mb-3">
+            <p className="mb-1">{item.date}</p>
+            <div className="d-flex align-items-center justify-content-between">
+              <h3>{item.day.avgtemp_c}&deg;C</h3>
+              <img src={item.day.condition.icon} alt="img" />
+            </div>
+            <p>{item.day.condition.text}</p>
           </div>
         ))}
       </div>
