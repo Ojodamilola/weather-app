@@ -37,7 +37,7 @@ function App() {
       };
       const getDailyForecast = async () => {
         
-        const url = "http://api.weatherapi.com/v1/forecast.json?";
+        const url = "https://api.weatherapi.com/v1/forecast.json?";
 
         try {
           const res = await fetch(
@@ -86,7 +86,7 @@ function App() {
       }
     };
     const getDailyForecast = async () => {
-      const url = "http://api.weatherapi.com/v1/forecast.json?";
+      const url = "https://api.weatherapi.com/v1/forecast.json?";
       try {
         const res = await fetch(
           `${url}key=${apiAccessKey}&q=${location}&days=7`
