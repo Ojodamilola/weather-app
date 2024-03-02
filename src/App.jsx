@@ -152,7 +152,11 @@ function App() {
     }
   };
 
-  
+  const handleKeyDown = (event) => {
+    if(event.key === 'Enter') {
+      handleSearch();
+    }
+  }
 
 
   return (
@@ -170,6 +174,7 @@ function App() {
                     placeholder="Search for cities"
                     className="search-control"
                     value={location}
+                    onKeyDown={handleKeyDown}
                     onChange={(e) => setCityName(e.target.value)}
                   />
                   <button className="search-btn" onClick={handleSearch}>
