@@ -8,14 +8,14 @@ import CurrentWeatherDetails from "./Components/CurrentWeatherDetails";
 import DailyForecast from "./Components/DailyForecast";
 
 function App() {
-  const apiKey = process.env.REACT_APP_OPEN_WEATHER_API_KEY;
-  const apiAccessKey = process.env.REACT_APP_WEATHER_API_ACCESSKEY;
+  const apiKey = import.meta.env.VITE_OPEN_WEATHER_API_KEY;
+  const apiAccessKey = import.meta.env.VITE_WEATHER_API_ACCESSKEY;
   const [location, setCityName] = useState("");
   const [currentData, setCurrentData] = useState(null);
   const [error, setError] = useState(null);
   const [hourForecast, setHourForecast] = useState(null);
   const [dailyForecast, setDailyForecast] = useState(null);
-
+  
   useEffect(() => {
     getCurrentWeather();
   }, []);
