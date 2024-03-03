@@ -8,8 +8,8 @@ import CurrentWeatherDetails from "./Components/CurrentWeatherDetails";
 import DailyForecast from "./Components/DailyForecast";
 
 function App() {
-  const apiKey = "6a0ce76895d9c8de6cffbd89fb467e88";
-  const apiAccessKey = "dffb541e95a64980898154955242702";
+  const apiKey = process.env.REACT_APP_OPEN_WEATHER_API_KEY;
+  const apiAccessKey = process.env.REACT_APP_WEATHER_API_ACCESSKEY;
   const [location, setCityName] = useState("");
   const [currentData, setCurrentData] = useState(null);
   const [error, setError] = useState(null);
@@ -36,7 +36,6 @@ function App() {
         }
       };
       const getDailyForecast = async () => {
-        
         const url = "https://api.weatherapi.com/v1/forecast.json?";
 
         try {
@@ -153,11 +152,10 @@ function App() {
   };
 
   const handleKeyDown = (event) => {
-    if(event.key === 'Enter') {
+    if (event.key === "Enter") {
       handleSearch();
     }
-  }
-
+  };
 
   return (
     <>
@@ -222,13 +220,18 @@ function App() {
               </Row>
             </Col>
             <Col lg={4} md={12} xs={12} className="col-4">
-               <div>
+              <div>
                 {dailyForecast ? (
                   <DailyForecast dailyForecast={dailyForecast} />
                 ) : (
-                  <p>no daily forecast</p>
+                  <div>
+                    <p>Loading daily forecast</p>
+                    <div className="spinner-border text-white" role="status">
+                      <span className="sr-only"></span>
+                    </div>
+                  </div>
                 )}
-              </div> 
+              </div>
             </Col>
           </Row>
         </div>

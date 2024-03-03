@@ -61,26 +61,6 @@ html {
   font-weight: 700;
   color: rgb(0, 0, 71);
 }
-.filtered{
-  max-height: 200px;
-  width: 100%;
-  background-color: #fff;
-  overflow-y: auto;
-  color: #000;
-  z-index: 99;
-  border-radius: 10px;
-  
-}
-.filtered ul{
-  list-style: none;
-}
-.filtered ul li{
-  line-height: 1;
-  
-}
-.filtered ul li p{
-line-height: 1;
-}
 /*===  current weather display  ===*/
 .currentWeather {
   position: relative;
@@ -118,18 +98,18 @@ line-height: 1;
   line-height: 1;
 }
 .hourForecast {
-  background-color: rgb(228, 242, 247);
+  background-color: transparent;
   padding: 1em;
   border-radius: 10px;
-  color: #000;
+  color: rgb(228, 242, 247);
   overflow-x: auto;
 }
 
 .hourcard {
   height: 200px;
   width: 200px;
-  margin-right: 10px;
-  background-color: transparent !important;
+  margin-right: 15px;
+  background-color: rgb(228, 242, 247) !important;
 }
 
 .hourForecast::-webkit-scrollbar, .dailyForecast::-webkit-scrollbar {
